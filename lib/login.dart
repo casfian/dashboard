@@ -1,8 +1,12 @@
 import 'package:dashboard/home.dart';
 import 'package:flutter/material.dart';
 
+//utk login
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
+
+//utk simpan token
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -12,7 +16,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String? token = '';
+  String? token;
 
   final formKey = GlobalKey<FormState>();
 
@@ -40,6 +44,10 @@ class _LoginState extends State<Login> {
         print('Token: $mytoken');
         token = mytoken;
         // Now you can use the "mytoken" variable as needed
+        //simpan token
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token!);
+
       } else {
         print('Token not found in the response');
       }
@@ -131,11 +139,11 @@ class _LoginState extends State<Login> {
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: const StadiumBorder()),
-                      onPressed: () {
+                      onPressed: () async {
                         //step 1, check dah isi semua
                         //email dan password
                         if (formKey.currentState!.validate()) {
-                          postLogin(
+                          await postLogin(
                               emailController.text, passwordController.text);
 
                           //step 2, htr login info, return token
