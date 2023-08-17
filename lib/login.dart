@@ -12,7 +12,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String? token = 'tytrytryryertyre';
+  String? token = '';
 
   final formKey = GlobalKey<FormState>();
 
@@ -22,13 +22,30 @@ class _LoginState extends State<Login> {
   final passwordController = TextEditingController();
 
   //function login
-  postLogin(String email, String password) async {
+  Future<void> postLogin(String email, String password) async {
     var url = Uri.parse('https://myide.kerisik.com/sufia/t/api/todo/login');
-    var response = await http.post(url,
-        headers: {'Content-Type': 'application/json'},
-        body: convert.jsonEncode({'login_id': email, 'password': password}));
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: convert.jsonEncode({'login_id': email, 'password': password}),
+    );
+
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = convert.jsonDecode(response.body);
+      if (jsonResponse.containsKey('token')) {
+        String mytoken = jsonResponse['token'];
+        print('Token: $mytoken');
+        token = mytoken;
+        // Now you can use the "mytoken" variable as needed
+      } else {
+        print('Token not found in the response');
+      }
+    } else {
+      print('Login failed');
+    }
   }
 
   @override
@@ -118,23 +135,24 @@ class _LoginState extends State<Login> {
                         //step 1, check dah isi semua
                         //email dan password
                         if (formKey.currentState!.validate()) {
-                          postLogin(emailController.text, passwordController.text);
+                          postLogin(
+                              emailController.text, passwordController.text);
 
                           //step 2, htr login info, return token
                           //code login
                           //if ada token boleh masuk
                           //if takde token tak boleh masuk
-                          
-                          // if (token!.isNotEmpty) {
-                          //   //goto to home()
-                          //   print('Login OK!');
-                          //   MaterialPageRoute route = MaterialPageRoute(
-                          //       builder: (context) => const Home());
-                          //   Navigator.push(context, route);
-                          // } else {
-                          //   //failed
-                          //   print('failed');
-                          // }
+
+                          if (token!.isNotEmpty) {
+                            //goto to home()
+                            print('Login OK!');
+                            MaterialPageRoute route = MaterialPageRoute(
+                                builder: (context) => const Home());
+                            Navigator.push(context, route);
+                          } else {
+                            //failed
+                            print('failed');
+                          }
                         }
                       },
                       child: const Text('Log Masuk')),
