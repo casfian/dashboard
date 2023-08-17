@@ -26,7 +26,34 @@ class Dashboard extends StatelessWidget {
           ),
         ],
       ),
-      drawer: const Drawer(),
+      drawer: Drawer(
+        backgroundColor: const Color.fromARGB(255, 161, 212, 235),
+        child: ListView(children: [
+          ListTile(
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('About Us'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () {
+              MaterialPageRoute route =
+                  MaterialPageRoute(builder: (context) => const Login());
+              Navigator.pushAndRemoveUntil(context, route, (route) => false);
+            },
+          ),
+        ]),
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
