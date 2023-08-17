@@ -1,6 +1,9 @@
 import 'package:dashboard/home.dart';
 import 'package:flutter/material.dart';
 
+import 'dart:convert' as convert;
+import 'package:http/http.dart' as http;
+
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -14,6 +17,19 @@ class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
 
   bool _obscure = true;
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  //function login
+  postLogin(String email, String password) async {
+    var url = Uri.parse('https://myide.kerisik.com/sufia/t/api/todo/login');
+    var response = await http.post(url,
+        headers: {'Content-Type': 'application/json'},
+        body: convert.jsonEncode({'login_id': email, 'password': password}));
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +54,7 @@ class _LoginState extends State<Login> {
                   height: 40,
                 ),
                 TextFormField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(
                       Icons.email,
@@ -60,6 +77,7 @@ class _LoginState extends State<Login> {
                   height: 20,
                 ),
                 TextFormField(
+                  controller: passwordController,
                   obscureText: _obscure,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(
@@ -68,15 +86,12 @@ class _LoginState extends State<Login> {
                     ),
                     suffixIcon: InkWell(
                         onTap: () {
-                          
                           if (_obscure == true) {
                             _obscure = false;
                           } else {
                             _obscure = true;
                           }
-                          setState(() {
-                            
-                          });
+                          setState(() {});
                         },
                         child: const Icon(Icons.remove_red_eye_outlined)),
                     border: OutlineInputBorder(
@@ -103,20 +118,23 @@ class _LoginState extends State<Login> {
                         //step 1, check dah isi semua
                         //email dan password
                         if (formKey.currentState!.validate()) {
+                          postLogin(emailController.text, passwordController.text);
+
                           //step 2, htr login info, return token
                           //code login
                           //if ada token boleh masuk
                           //if takde token tak boleh masuk
-                          if (token!.isNotEmpty) {
-                            //goto to home()
-                            print('Login OK!');
-                            MaterialPageRoute route = MaterialPageRoute(
-                                builder: (context) => const Home());
-                            Navigator.push(context, route);
-                          } else {
-                            //failed
-                            print('failed');
-                          }
+                          
+                          // if (token!.isNotEmpty) {
+                          //   //goto to home()
+                          //   print('Login OK!');
+                          //   MaterialPageRoute route = MaterialPageRoute(
+                          //       builder: (context) => const Home());
+                          //   Navigator.push(context, route);
+                          // } else {
+                          //   //failed
+                          //   print('failed');
+                          // }
                         }
                       },
                       child: const Text('Log Masuk')),
